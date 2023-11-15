@@ -11,44 +11,24 @@ namespace Event_Calender_api.Controllers
     {
         //BASE
         //PUBLIC BASE B = NEW BASE();
-        public static List<Event> events = new List<Event>
+       private readonly DataContext _dataContext;
+        public EventsController(DataContext context)
         {
-           new Event
-           {
-            Id = 1,
-            Title = "Event 1",
-            Start = DateTime.Now,
-            End = DateTime.Now.AddHours(2)
-            },
-           new Event
-           {
-            Id = 2,
-            Title = "Event 2",
-            Start = DateTime.Now.AddHours(3),
-            End = DateTime.Now.AddHours(5)
-           },
-            new Event
-           {
-            Id = 3,
-            Title = "Event 3",
-            Start = DateTime.Now.AddHours(3),
-            End = DateTime.Now.AddHours(5)
-           },
-
-
-        };
+            _dataContext = context;
+        }
+           
         // GET: api/<EventsController>
         [HttpGet]
         public List<Event> Get()
         {
-            return events;
+            return _dataContext.Events;
         }
 
         // GET api/<EventsController>/5
         [HttpGet("{id}")]
         public ActionResult<Event> Get(int id)
         {
-            Event event1 = events.Find(e => e.Id == id);
+            Event event1 = _dataContext.Events.Find(e => e.Id == id);
             if (event1 is null)
                 return NotFound();
             return event1;  
@@ -60,9 +40,9 @@ namespace Event_Calender_api.Controllers
         {
             if(newEvent is null)
                 Console.WriteLine("Invalid event data");
-            int newEventId = events.Max(e => e.Id)+1;
+            int newEventId = _dataContext.Events.Max(e => e.Id)+1;
             newEvent.Id = newEventId;
-            events.Add(newEvent);         
+            _dataContext.Events.Add(newEvent);         
         }
 
         // PUT api/<EventsController>/5
@@ -71,7 +51,7 @@ namespace Event_Calender_api.Controllers
         {
             if (updateEvent is null)
                 return BadRequest("Invalid event data");
-            Event eventToUpdate = events.Find(e => e.Id == id);
+            Event eventToUpdate = _dataContext.Events.Find(e => e.Id == id);
             if (eventToUpdate is null)
                 return NotFound();//לא מצא
             eventToUpdate.Title = updateEvent.Title;
@@ -84,9 +64,10 @@ namespace Event_Calender_api.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            Event newEvent=events.Find(e => e.Id == id);
+            Event newEvent= _dataContext.Events.Find(e => e.Id == id);
             if(newEvent != null)
-                events.Remove(newEvent);
+                _dataContext.Events.Remove(newEvent);
         }
     }
 }
+ 
